@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Particle Stream</title>
+		<meta name="description" content="Particle Stream">
+		<meta http-equiv="X-UA-Compatible" content="IE=100" > <!-- IE9 mode -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1.0">
+		<meta property="og:title" content="Particle Stream" />
+		<meta property="og:site_name" content="Particle Stream"/>
+		<meta property="og:description" content="Particle Stream"/>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<link rel="stylesheet" type="text/css" href="css/main.css">
+
+		<script src="js/libs/Tween.js"></script>
+		<script src="js/libs/glMatrix-0.9.5.min.js"></script>
+		<script src="js/libs/dat.gui.js"></script>
+		<script src="js/libs/Perlin.js"></script>
+		<script src="js/libs/leap-0.6.3.min.js"></script>
+
+		<script src="js/bongiovi/SimpleImageLoader.js"></script>
+		<script src="js/bongiovi/Scheduler.js"></script>
+
+		<script src="js/gl/GLTools.js"></script>
+		<script src="js/gl/GLShader.js"></script>
+		<script src="js/gl/GLTexture.js"></script>
+		<script src="js/gl/Camera.js"></script>
+		<script src="js/gl/Mesh.js"></script>
+		<script src="js/gl/SceneRotation.js"></script>
+		<script src="js/gl/Scene.js"></script>
+		<script src="js/gl/View.js"></script>
+		<script src="js/gl/Framebuffer.js"></script>
+
+		<script src="js/ViewForce.js"></script>
+		<script src="js/ViewCalculate.js"></script>
+		<script src="js/ViewMap.js"></script>
+		<script src="js/ViewSave.js"></script>
+		<script src="js/SceneFlowers.js"></script>
+		<script src="js/Index.js"></script>
+		<script>
+			var main, scheduler, gui, images;
+			var params = {};
+
+			params.numParticles = 512;
+			params.offset = 0;
+			params.posOffset = 4.5;
+			params.velOffset = 0.01;
+			params.accOffset = 0.001;
+			params.timeOffset = 0.001;
+			params.decreaseRate = 0.9963;
+			params.showForceMap = false;
+			params.showMap = false;
+
+			function init() {
+
+				scheduler  = new Scheduler();
+				var loader = new SimpleImageLoader();
+
+				var toLoad = [
+							"assets/dot.png",
+							"assets/bg.jpg"
+							];
+
+				loader.load(toLoad, this, this.onImageLoaded);
+			}
+
+
+			function onImageLoaded(imgs) {
+				console.log( "Image Loaded :", imgs );
+				images = imgs;
+				main = new Main();
+
+				window.addEventListener("keypress", function(e) {
+					if(e.keyCode == 109) {
+						params.showMap = !params.showMap;
+						params.showForceMap = false;
+					} else if(e.keyCode == 102) {
+						params.showMap = false;
+						params.showForceMap = !params.showForceMap;
+					} else if(e.keyCode == 114) {
+						main.scene.resetCamera();
+
+					}
+				});
+
+			}
+		</script>
+	</head>
+
+	<body onload="init()">
+		<div class="desc">
+			<h1 class="instruction">Particle Stream with Leap Motion</h1>
+			<p class="copy">Wave your hands to interact with particles.<br/>- Press "M" to reveal the Framebuffer.<br/>- Press "F" to reveal the texture of gesture force.<br/>- Press "R" to reset the camera position.</p>
+		</div> 
+	</body>
+</html>
