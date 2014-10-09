@@ -39,6 +39,7 @@
 		
 		this._leap = new Leap.Controller();
 		this._leap.loop(this._onLeapFrame.bind(this));
+		window.addEventListener("mousemove", this._onMouseMove.bind(this));
 
 		this.position0 = {x:-99, y:-99};
 		this.targetRadius0 = 0.0;
@@ -47,13 +48,39 @@
 		this.strength0 = 0.0;
 		this.handDirection0 = [.5, .5, .5];
 
-
 		this.position1 = {x:-99, y:-99};
 		this.targetRadius1 = 0.0;
 		this.radius1 = 0.0;
 		this.targetStrength1 = 0.0;
 		this.strength1 = 0.0;
 		this.handDirection1 = [.5, .5, .5];
+
+
+		this.positionMouse = {x:-99, y:-99};
+		this.targetRadiusMouse = 0.0;
+		this.radiusMouse = 0.07;
+		this.targetStrengthMouse = 0.0;
+		this.strengthMouse = 0.125;
+	};
+
+
+	p._onMouseMove = function(e) {
+		if(this.position0.x < 0) {
+			this.position0.x = e.clientX/window.innerWidth;
+			this.position0.y = e.clientY/window.innerHeight;
+			return;
+		}		
+
+
+		var index = 0;
+		var vel = vec3.create([e.clientX/window.innerWidth - this.position0.x, e.clientY/window.innerHeight - this.position0.y, 0]);
+		var velLength = vec3.length(vel);
+
+		this.targetStrengthMouse = velLength * 2.0;
+		this.positionMouse.x = e.clientX / window.innerWidth;
+		this.positionMouse.y = 1.0 - e.clientY / window.innerHeight;
+
+		this.targetRadiusMouse = .1 + this.targetStrengthMouse * .3;
 	};
 
 
@@ -112,6 +139,8 @@
 		this.strength0 += (this.targetStrength0 - this.strength0) * .1;
 		this.radius1 += (this.targetRadius1 - this.radius1) * .1;
 		this.strength1 += (this.targetStrength1 - this.strength1) * .1;
+		// this.radiusMouse += (this.targetRadiusMouse - this.radiusMouse) * .1;
+		// this.strengthMouse += (this.targetStrengthMouse - this.strengthMouse) * .1;
 
 		this.shader.bind();
 		this.shader.uniform("handPosition0", "uniform2fv", [1.0-this.position0.x, this.position0.y]);
@@ -123,6 +152,10 @@
 		this.shader.uniform("handDirection1", "uniform3fv", this.handDirection1);
 		this.shader.uniform("radius1", "uniform1f", this.radius1);
 		this.shader.uniform("strength1", "uniform1f", this.strength1);
+
+		this.shader.uniform("mousePosition", "uniform2fv", [1.0-this.positionMouse.x, this.positionMouse.y]);
+		this.shader.uniform("radiusMouse", "uniform1f", this.radiusMouse);
+		this.shader.uniform("strengthMouse", "uniform1f", this.strengthMouse);
 
 		GL.draw(this.mesh);
 	};
