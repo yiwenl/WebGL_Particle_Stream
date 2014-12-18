@@ -78,6 +78,7 @@
 
 	p._onMouseMove = function(e) {
 		this.mouse = getMousePos(e);
+		if(e.touches) e.preventDefault();
 	};
 
 	p._onMouseUp = function(e) {
@@ -100,8 +101,6 @@
 
 
 	p.setCameraPos = function(quat) {
-		console.log( "Set camera pos : ", quat );
-
 		if(this._slerp > 0) return;
 		// quat4.set(quat, this._rotation);
 		var tempRotation = quat4.create(this._rotation);
@@ -117,7 +116,16 @@
 
 		this._targetQuat = quat4.create(quat);
 		this._slerp = 1;
+	};
 
+
+	p.resetQuat = function() {
+		this._rotation    = quat4.create([1, 0, 0, 0]);
+		this.tempRotation = quat4.create([0, 0, 0, 0]);
+		this._targetQuat  = undefined;
+		this._slerp       = -1;
+
+		// quat4.set(this._rotation, this.tempRotation);
 	};
 
 
@@ -128,7 +136,7 @@
 			quat4.set(this._rotation, this.tempRotation);
 			this._updateRotation(this.tempRotation);
 		} else {
-			this._slerp += (0 - this._slerp) * .1;
+			this._slerp += (0 - this._slerp) * .05;
 
 			if(this._slerp < .001) {
 				quat4.set(this._targetQuat, this._rotation);
@@ -149,6 +157,7 @@
 		this.matrix = quat4.toMat4(this.tempRotation);
 		mat4.multiply(this.matrix, this.m);
 
+		// console.log( quat4.str(this.tempRotation) );
 	};
 
 
@@ -187,8 +196,7 @@
 			quat4.multiply(tempRotation, quat);
 		}
 		
-		this._z += (this._preZ - this._z) * this._easing;
-		
+		// this._z += (this._preZ - this._z) * this._easing;
 	};
 
 })();

@@ -10,7 +10,7 @@
 		this.width  = width;
 		this.height = height;
 		this.magFilter = magFilter==undefined ? gl.LINEAR : magFilter;
-		this.minFilter = minFilter==undefined ? gl.LINEAR_MIPMAP_NEAREST : minFilter;
+		this.minFilter = minFilter==undefined ? gl.LINEAR : minFilter;
 
 		this._init();
 	}
@@ -20,14 +20,6 @@
 
 	p._init = function() {
 		this.depthTextureExt 	= gl.getExtension("WEBKIT_WEBGL_depth_texture"); // Or browser-appropriate prefix
-		this.floatTextureExt 	= gl.getExtension("OES_texture_float") // Or browser-appropriate prefix
-
-		var floatTextures = gl.getExtension('OES_texture_float');
-		if (!floatTextures) {
-		    alert('no floating point texture support');
-		    return;
-		}
-
 
 		this.texture            = gl.createTexture();
 		this.depthTexture       = gl.createTexture();
@@ -51,20 +43,25 @@
 
 		gl.generateMipmap(gl.TEXTURE_2D);
 
-	    // var renderbuffer = gl.createRenderbuffer();
-	    // gl.bindRenderbuffer(gl.RENDERBUFFER, renderbuffer);
-	    // gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, this.frameBuffer.width, this.frameBuffer.height);
-	    
 		gl.bindTexture(gl.TEXTURE_2D, this.depthTexture);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT, this.width, this.height, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_SHORT, null);
+		if(this.depthTextureExt != null)gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT, this.width, this.height, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_SHORT, null);
 
 	    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture, 0);
-	    // gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderbuffer);
-	    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, this.depthTexture, 0);
+	    if(this.depthTextureExt == null) {
+	    	console.log( "no depth texture" );
+	    	var renderbuffer = gl.createRenderbuffer();
+	    	gl.bindRenderbuffer(gl.RENDERBUFFER, renderbuffer);
+	    	gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, this.frameBuffer.width, this.frameBuffer.height);
+	    	gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderbuffer);
+	    } else {
+	    	gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, this.depthTexture, 0);
+	    }
+	    
+	    
 
 	    gl.bindTexture(gl.TEXTURE_2D, null);
 	    gl.bindRenderbuffer(gl.RENDERBUFFER, null);

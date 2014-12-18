@@ -10,6 +10,7 @@
 		this.getShader(this.idVertex, true);
 		this.getShader(this.idFragment, false);
 		this.parameters = [];
+		this._isReady = false;
 	}
 
 	var p = GLShader.prototype;
@@ -19,7 +20,8 @@
 		gl.attachShader(this.shaderProgram, this.vertexShader);
 		gl.attachShader(this.shaderProgram, this.fragmentShader);
 		gl.linkProgram(this.shaderProgram);
-		console.log( "Shader program created : ", this.idVertex, this.idFragment );
+		this._isReady = true;
+		// console.log( "Shader program created : ", this.idVertex, this.idFragment );
 	};
 
 
@@ -106,4 +108,6 @@
 	p.unbind = function() {
 		
 	};
+
+	p.isReady = function() {	return this._isReady;	};
 })();

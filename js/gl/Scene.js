@@ -16,7 +16,7 @@
 	p._init = function() {
 		this.camera 		= new CameraPersp();
 		this.camera.setPerspective(45, window.innerWidth/window.innerHeight, 5, 3000);
-		var eye = vec3.create([0, 0, 500]);
+		var eye = vec3.create([0, 0, 800]);
 		var center = vec3.create([0, 0, 0]);
 		var up = vec3.create([0, -1, 0]);
 		this.camera.lookAt(eye, center, up);
@@ -28,6 +28,8 @@
 
 		this._initTextures();
 		this._initViews();
+
+		window.addEventListener("resize", this.resize.bind(this));
 	};
 
 
@@ -58,6 +60,11 @@
 
 	p.render = function() {
 		
+	};
+
+
+	p.resize = function() {
+		this.camera.setPerspective(45, window.innerWidth/window.innerHeight, 5, 3000);
 	};
 
 

@@ -66,7 +66,6 @@
 		for(var i=0; i<this.extraAttributes.length; i++) {
 			if(this.extraAttributes[i].name == name) {
 				this.extraAttributes[i].data = data;
-				// return;
 				index = i;
 				break;
 			}
