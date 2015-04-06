@@ -21,5 +21,5 @@ void main(void) {
 	toDiscard = aTextureCoord.x;
 
     gl_Position = uPMatrix * uMVMatrix * vec4(pos, 1.0);
-    //gl_PointSize = aExtra.x;
+    gl_PointSize = 1.0;
 }
